@@ -56,4 +56,29 @@ class ExamenServiceImplTest {
         assertEquals(5, examen.getPreguntas().size());
         assertTrue(examen.getPreguntas().contains("ecuaciones"));
     }
+
+    @Test
+    void testPreguntasExamenVerify() {
+        when(repository.findAll()).thenReturn(Datos.DATOS);
+        when(preguntasRepository.findPreguntasByExamenId(5L)).thenReturn(Datos.PREGUNTAS);
+        Examen examen = service.findExamenPorNombreConPreguntas("Matematicas");
+        assertEquals(5, examen.getPreguntas().size());
+        assertTrue(examen.getPreguntas().contains("ecuaciones"));
+        /*
+        * verify: Verifica si se ejecuta el método mencionado
+        * en caso de no serlo, el test falla
+        * */
+        verify(repository).findAll();
+        verify(preguntasRepository).findPreguntasByExamenId(anyLong());
+    }
+
+    @Test
+    void testNotExistExamen() {
+        when(repository.findAll()).thenReturn(Datos.DATOS_EMPTY);
+        when(preguntasRepository.findPreguntasByExamenId(5L)).thenReturn(Datos.PREGUNTAS);
+        Examen examen = service.findExamenPorNombreConPreguntas("Computacion");
+        assertNull(examen);
+        verify(repository).findAll();
+        verify(preguntasRepository).findPreguntasByExamenId(anyLong());
+    }
 }
