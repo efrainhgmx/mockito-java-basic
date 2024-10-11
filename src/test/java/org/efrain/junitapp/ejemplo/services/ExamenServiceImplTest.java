@@ -24,17 +24,15 @@ class ExamenServiceImplTest {
     @BeforeEach
     void setUp() {
         repository = mock(ExamenRepository.class);
-        preguntasRepository = mock(PreguntasRepository.class)
+        preguntasRepository = mock(PreguntasRepository.class);
         service = new ExamenServiceImpl(repository, preguntasRepository);
     }
 
     @Test
     void findExamenPorNombre() {
-        List<Examen> datos =  Arrays.asList(new Examen(5L, "Matematicas"), new Examen(6L, "Historia"),
-                new Examen(7L, "Fisica"));
 
         when(repository.findAll())
-                .thenReturn(datos);
+                .thenReturn(Datos.DATOS);
         Optional<Examen> examen = service.findExamenPorNombre("Matematicas");
         assertTrue(examen.isPresent());
         assertEquals(5L, examen.get().getId());
@@ -43,11 +41,19 @@ class ExamenServiceImplTest {
 
     @Test
     void findExamenPorNombreEmpty() {
-        List<Examen> datos =  Collections.emptyList();
 
         when(repository.findAll())
-                .thenReturn(datos);
+                .thenReturn(Datos.DATOS_EMPTY);
         Optional<Examen> examen = service.findExamenPorNombre("Matematicas");
         assertFalse(examen.isPresent());
+    }
+
+    @Test
+    void testPreguntasExamen() {
+        when(repository.findAll()).thenReturn(Datos.DATOS);
+        when(preguntasRepository.findPreguntasByExamenId(5L)).thenReturn(Datos.PREGUNTAS);
+        Examen examen = service.findExamenPorNombreConPreguntas("Matematicas");
+        assertEquals(5, examen.getPreguntas().size());
+        assertTrue(examen.getPreguntas().contains("ecuaciones"));
     }
 }
