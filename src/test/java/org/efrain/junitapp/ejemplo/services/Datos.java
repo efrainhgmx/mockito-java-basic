@@ -10,6 +10,9 @@ public class Datos {
     public final static List<Examen> EXAMENES =  Arrays.asList(new Examen(5L, "Matematicas"), new Examen(6L, "Historia"),
             new Examen(7L, "Fisica"));
 
+    public final static List<Examen> EXAMENES_NEGATIVOS =  Arrays.asList(new Examen(-5L, "Matematicas"), new Examen(-6L, "Historia"),
+            new Examen(-7L, "Fisica"));
+
     public final static List<Examen> EXAMENES_EMPTY_LIST =  Collections.emptyList();
 
     public final static List<String> PREGUNTAS = Arrays.asList("artimetica", "integrales", "geometria", "derivadas", "ecuaciones");

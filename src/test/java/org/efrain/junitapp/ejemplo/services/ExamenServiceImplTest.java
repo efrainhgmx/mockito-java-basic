@@ -6,6 +6,8 @@ import org.efrain.junitapp.ejemplo.repositores.PreguntasRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatcher;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
@@ -140,6 +142,31 @@ class ExamenServiceImplTest {
         verify(preguntasRepository).findPreguntasByExamenId(argThat(arg -> arg != null && arg.equals(5L)));
         //*eq es elargumentMatchers equals
         verify(preguntasRepository).findPreguntasByExamenId(eq(5L));
+    }
 
+    @Test
+    void testArgumentMyMatchers() {
+        when(repository.findAll()).thenReturn(Datos.EXAMENES_NEGATIVOS);
+        when(preguntasRepository.findPreguntasByExamenId(anyLong())).thenReturn(Datos.PREGUNTAS);
+
+        service.findExamenPorNombreConPreguntas("Fisica");
+
+        verify(repository).findAll();
+        verify(preguntasRepository).findPreguntasByExamenId(argThat(new MiArgsMatchers()));
+    }
+
+
+    public static class MiArgsMatchers implements ArgumentMatcher<Long> {
+        @Override
+        public boolean matches(Long argument) {
+            return argument !=null && argument > 0;
+        }
+
+        @Override
+        public String toString() {
+            return "es para un mensjae personalizado de error " +
+                    "que imprime mockito en caso de que falle el test" +
+                    " Debe ser un entero positivo";
+        }
     }
 }
