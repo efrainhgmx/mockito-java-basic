@@ -6,10 +6,7 @@ import org.efrain.junitapp.ejemplo.repositores.PreguntasRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatcher;
-import org.mockito.ArgumentMatchers;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.*;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
@@ -29,6 +26,9 @@ class ExamenServiceImplTest {
 
     @InjectMocks
     ExamenServiceImpl service;
+
+    @Captor
+    ArgumentCaptor<Long> captor;
 
     @BeforeEach
     void setUp() {
@@ -169,4 +169,19 @@ class ExamenServiceImplTest {
                     " Debe ser un entero positivo";
         }
     }
+
+    @Test
+    void testArgumentCaptor() {
+        when(repository.findAll()).thenReturn(Datos.EXAMENES);
+        when(preguntasRepository.findPreguntasByExamenId(anyLong())).thenReturn(Datos.PREGUNTAS);
+
+        service.findExamenPorNombreConPreguntas("Fisica");
+
+        //*ArgumentCapture, ayuda a capturar el argumento del método.
+        //ArgumentCaptor<Long> captor = ArgumentCaptor.forClass(Long.class);
+        verify(preguntasRepository).findPreguntasByExamenId(captor.capture());
+
+        assertEquals(7L, captor.getValue());
+    }
+
 }
