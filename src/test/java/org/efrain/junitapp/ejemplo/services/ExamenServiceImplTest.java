@@ -123,4 +123,15 @@ class ExamenServiceImplTest {
         assertEquals("Fisica", examen.getNombre());
         verify(repository).guardar(any(Examen.class));
     }
+
+    @Test
+    void testManejoException() {
+        when(repository.findAll()).thenReturn(Datos.DATOS);
+        when(preguntasRepository.findPreguntasByExamenId(anyLong())).thenThrow(IllegalArgumentException.class);
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            service.findExamenPorNombreConPreguntas("Matematicas");
+        });
+
+        assertEquals(IllegalArgumentException.class, exception.getClass());
+    }
 }
