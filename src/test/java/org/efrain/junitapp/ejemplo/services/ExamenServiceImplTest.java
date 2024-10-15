@@ -2,22 +2,16 @@ package org.efrain.junitapp.ejemplo.services;
 
 import org.efrain.junitapp.ejemplo.models.Examen;
 import org.efrain.junitapp.ejemplo.repositores.ExamenRepository;
-import org.efrain.junitapp.ejemplo.repositores.ExamenRepositoryImpl;
 import org.efrain.junitapp.ejemplo.repositores.PreguntasRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -47,7 +41,7 @@ class ExamenServiceImplTest {
     void findExamenPorNombre() {
 
         when(repository.findAll())
-                .thenReturn(Datos.DATOS);
+                .thenReturn(Datos.EXAMENES);
         Optional<Examen> examen = service.findExamenPorNombre("Matematicas");
         assertTrue(examen.isPresent());
         assertEquals(5L, examen.get().getId());
@@ -58,14 +52,14 @@ class ExamenServiceImplTest {
     void findExamenPorNombreEmpty() {
 
         when(repository.findAll())
-                .thenReturn(Datos.DATOS_EMPTY);
+                .thenReturn(Datos.EXAMENES_EMPTY_LIST);
         Optional<Examen> examen = service.findExamenPorNombre("Matematicas");
         assertFalse(examen.isPresent());
     }
 
     @Test
     void testPreguntasExamen() {
-        when(repository.findAll()).thenReturn(Datos.DATOS);
+        when(repository.findAll()).thenReturn(Datos.EXAMENES);
         when(preguntasRepository.findPreguntasByExamenId(5L)).thenReturn(Datos.PREGUNTAS);
         Examen examen = service.findExamenPorNombreConPreguntas("Matematicas");
         assertEquals(5, examen.getPreguntas().size());
@@ -74,7 +68,7 @@ class ExamenServiceImplTest {
 
     @Test
     void testPreguntasExamenVerify() {
-        when(repository.findAll()).thenReturn(Datos.DATOS);
+        when(repository.findAll()).thenReturn(Datos.EXAMENES);
         when(preguntasRepository.findPreguntasByExamenId(5L)).thenReturn(Datos.PREGUNTAS);
         Examen examen = service.findExamenPorNombreConPreguntas("Matematicas");
         assertEquals(5, examen.getPreguntas().size());
@@ -89,7 +83,7 @@ class ExamenServiceImplTest {
 
     @Test
     void testNotExistExamen() {
-        when(repository.findAll()).thenReturn(Datos.DATOS_EMPTY);
+        when(repository.findAll()).thenReturn(Datos.EXAMENES_EMPTY_LIST);
         when(preguntasRepository.findPreguntasByExamenId(5L)).thenReturn(Datos.PREGUNTAS);
         Examen examen = service.findExamenPorNombreConPreguntas("Computacion");
         assertNull(examen);
@@ -126,7 +120,7 @@ class ExamenServiceImplTest {
 
     @Test
     void testManejoException() {
-        when(repository.findAll()).thenReturn(Datos.DATOS);
+        when(repository.findAll()).thenReturn(Datos.EXAMENES);
         when(preguntasRepository.findPreguntasByExamenId(anyLong())).thenThrow(IllegalArgumentException.class);
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             service.findExamenPorNombreConPreguntas("Matematicas");
