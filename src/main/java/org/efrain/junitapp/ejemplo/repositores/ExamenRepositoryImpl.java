@@ -11,4 +11,9 @@ public class ExamenRepositoryImpl implements ExamenRepository{
         return Arrays.asList(new Examen(5L, "Matematicas"), new Examen(6L, "Historia"),
                 new Examen(7L, "Fisica"));
     }
+
+    @Override
+    public Examen guardar(Examen examen) {
+        return null;
+    }
 }

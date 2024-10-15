@@ -25,6 +25,7 @@ import static org.mockito.Mockito.*;
 class ExamenServiceImplTest {
     @Mock
     ExamenRepository repository;
+
     @Mock
     PreguntasRepository preguntasRepository;
 
@@ -92,5 +93,15 @@ class ExamenServiceImplTest {
         assertNull(examen);
         verify(repository).findAll();
         verify(preguntasRepository).findPreguntasByExamenId(anyLong());
+    }
+
+    @Test
+    void testGuardarExamen() {
+        when(repository.guardar(any(Examen.class))).thenReturn(Datos.EXAMEN);
+        Examen examen = service.guardar(Datos.EXAMEN);
+        assertNotNull(examen.getId());
+        assertEquals(8L, examen.getId());
+        assertEquals("Fisica", examen.getNombre());
+        verify(repository).guardar(any(Examen.class));
     }
 }
