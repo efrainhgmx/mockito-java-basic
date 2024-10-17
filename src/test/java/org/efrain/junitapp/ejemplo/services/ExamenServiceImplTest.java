@@ -194,6 +194,57 @@ class ExamenServiceImplTest {
         assertThrows(IllegalArgumentException.class, () -> {
             service.guardar(examen);
         });
+    }
 
+    /*
+    * doAnswer es otra manera de poder dar GIVEN
+    * Datos de prueba o simular ciertos escenarios
+    * */
+    @Test
+    void testDoAnswer() {
+        //?GIVEN
+        when(repository.findAll()).thenReturn(Datos.EXAMENES);
+        //when(preguntasRepository.findPreguntasByExamenId(anyLong())).thenReturn(Datos.PREGUNTAS);
+        doAnswer(invocation -> {
+            Long id = invocation.getArgument(0);
+            return id == 5L ? Datos.PREGUNTAS : null;
+        }).when(preguntasRepository).findPreguntasByExamenId(anyLong());
+
+        //*WHEN
+        Examen examen = service.findExamenPorNombreConPreguntas("Matematicas");
+
+        //!THEN
+        verify(preguntasRepository).findPreguntasByExamenId(anyLong());
+        assertEquals(5, examen.getPreguntas().size());
+        assertEquals(5L, examen.getId());
+
+    }
+
+    @Test
+    void testDoAnswerGuardarExamen() {
+        //?Given
+        Examen newExamen = Datos.EXAMEN;
+        newExamen.setPreguntas(Datos.PREGUNTAS);
+
+        //**Simula un autoincremento de id co doAnswer
+        doAnswer(new Answer<Examen>(){
+            Long secuencia = 8L;
+
+            @Override
+            public Examen answer(InvocationOnMock invocationOnMock) throws Throwable {
+                Examen examen = invocationOnMock.getArgument(0);
+                examen.setId(secuencia++);
+                return examen;
+            }
+        }).when(repository).guardar(any(Examen.class));
+
+        //*WHEN
+        Examen examen = service.guardar(newExamen);
+
+        //!THEN
+        assertNotNull(examen.getId());
+        assertEquals(8L, examen.getId());
+        assertEquals("Fisica", examen.getNombre());
+        verify(repository).guardar(any(Examen.class));
     }
 }
