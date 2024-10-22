@@ -2,6 +2,7 @@ package org.efrain.junitapp.ejemplo.services;
 
 import org.efrain.junitapp.ejemplo.models.Examen;
 import org.efrain.junitapp.ejemplo.repositores.ExamenRepository;
+import org.efrain.junitapp.ejemplo.repositores.ExamenRepositoryImpl;
 import org.efrain.junitapp.ejemplo.repositores.PreguntasRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -246,5 +247,27 @@ class ExamenServiceImplTest {
         assertEquals(8L, examen.getId());
         assertEquals("Fisica", examen.getNombre());
         verify(repository).guardar(any(Examen.class));
+    }
+
+    /*
+    * Los spies, usan los métodos reales pero puedes tambien
+    * simular algunos métodos.
+    * Este debe ejeuctar la implementacion y no la interfaz
+    * */
+    @Test
+    void testSpy() {
+        ExamenRepository examenRepository = spy(ExamenRepositoryImpl.class);
+        PreguntasRepository preguntasRepository = spy(PreguntasRepository.class);
+
+        ExamenServiceImpl examenService =  new ExamenServiceImpl(examenRepository, preguntasRepository);
+
+        //when(preguntasRepository.findPreguntasByExamenId(anyLong())).thenReturn(Datos.PREGUNTAS);
+        //*Evita que se ejecute el metodo real findPreguntasByExamenId
+        doReturn(Datos.PREGUNTAS).when(preguntasRepository).findPreguntasByExamenId(anyLong());
+
+        Examen examen = examenService.findExamenPorNombreConPreguntas("Matematicas");
+        assertEquals(5, examen.getId());
+        assertEquals("Matematicas", examen.getNombre());
+        assertTrue(examen.getPreguntas().contains("derivadas"));
     }
 }
