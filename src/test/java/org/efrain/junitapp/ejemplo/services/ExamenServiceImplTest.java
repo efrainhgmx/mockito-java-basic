@@ -270,4 +270,26 @@ class ExamenServiceImplTest {
         assertEquals("Matematicas", examen.getNombre());
         assertTrue(examen.getPreguntas().contains("derivadas"));
     }
+
+
+    /*
+    * Verifica si se ejecuta en el orden
+    * especificado
+    * */
+    @Test
+    void testOrdenInvocaciones() {
+        when(repository.findAll()).thenReturn(Datos.EXAMENES);
+
+        service.findExamenPorNombreConPreguntas("Matematicas");
+        service.findExamenPorNombreConPreguntas("Fisica");
+
+        InOrder inOrder = inOrder(repository, preguntasRepository);
+        //**Matematicas
+        inOrder.verify(repository).findAll();
+        inOrder.verify(preguntasRepository).findPreguntasByExamenId(5L);
+
+        //**Fisica
+        inOrder.verify(repository).findAll();
+        inOrder.verify(preguntasRepository).findPreguntasByExamenId(7L);
+    }
 }
