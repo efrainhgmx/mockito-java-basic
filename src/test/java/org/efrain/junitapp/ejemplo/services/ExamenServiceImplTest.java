@@ -292,4 +292,32 @@ class ExamenServiceImplTest {
         inOrder.verify(repository).findAll();
         inOrder.verify(preguntasRepository).findPreguntasByExamenId(7L);
     }
+
+    @Test
+    void testNumeroInvocaciones() {
+        when(repository.findAll()).thenReturn(Datos.EXAMENES);
+        service.findExamenPorNombreConPreguntas("Matematicas");
+
+
+        verify(preguntasRepository).findPreguntasByExamenId(5L);
+        //**POR DEFECTO ES TIMES(1)
+        verify(preguntasRepository, times(1)).findPreguntasByExamenId(5L);
+        verify(preguntasRepository, times(2)).findPreguntasByExamenId(5L);
+        //**Al menos N veces
+        verify(preguntasRepository, atLeast(1)).findPreguntasByExamenId(5L);
+        verify(preguntasRepository, atLeastOnce()).findPreguntasByExamenId(5L);
+        //**A lo mucho N veces
+        verify(preguntasRepository, atMost(10)).findPreguntasByExamenId(5L);
+        verify(preguntasRepository, atMostOnce()).findPreguntasByExamenId(5L);
+    }
+
+    @Test
+    void testNumeroInvocacionesDos() {
+        when(repository.findAll()).thenReturn(Datos.EXAMENES);
+
+        service.findExamenPorNombreConPreguntas("Fisicaa");
+        //**NUNCA SE INVOCA
+        verify(preguntasRepository, never()).findPreguntasByExamenId(anyLong());
+        verifyNoInteractions(preguntasRepository);
+    }
 }
